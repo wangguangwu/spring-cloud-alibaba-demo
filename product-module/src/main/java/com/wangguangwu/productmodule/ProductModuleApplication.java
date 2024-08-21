@@ -1,4 +1,4 @@
-package com.wangguangwu.usermodule;
+package com.wangguangwu.productmodule;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -9,12 +9,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * @author wangguangwu
  */
 @SpringBootApplication
-@MapperScan("com.wangguangwu.usermodule.mapper")
+@MapperScan("com.wangguangwu.productmodule.mapper")
 @EnableTransactionManagement
-public class UserModuleApplication {
+public class ProductModuleApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(UserModuleApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ProductModuleApplication.class, args);
+    }
 
 }

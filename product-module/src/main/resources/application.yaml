@@ -1,5 +1,5 @@
 server:
-  port: 8090
+  port: 8091
 
 spring:
   application:
@@ -7,13 +7,13 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/userdb?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=convertToNull&autoReconnect=true
+    url: jdbc:mysql://127.0.0.1:3306/productdb?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=convertToNull&autoReconnect=true
     username: root
     password: 123456
 
 mybatis-plus:
   # entity location
-  type-aliases-package: com.wangguangwu.usermodule.entity
+  type-aliases-package: com.wangguangwu.productmodule.entity
   configuration:
     # log
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
