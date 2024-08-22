@@ -1,12 +1,14 @@
 package com.wangguangwu.productmodule.service.impl;
 
-import com.wangguangwu.productmodule.entity.ProductInfoDO;
+import com.wangguangwu.beanmodule.bean.Product;
 import com.wangguangwu.productmodule.mapper.ProductInfoMapper;
 import com.wangguangwu.productmodule.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Optional;
 
 /**
  * @author wangguangwu
@@ -19,8 +21,14 @@ public class ProductServiceImpl implements ProductService {
     private ProductInfoMapper productInfoMapper;
 
     @Override
-    public ProductInfoDO getProductById(Long pid) {
-        return productInfoMapper.selectById(pid);
+    public Product getProductById(Long pid) {
+        return Optional.ofNullable(productInfoMapper.selectById(pid))
+                .map(productInfoDO -> {
+                    Product product = new Product();
+                    BeanUtils.copyProperties(productInfoDO, product);
+                    return product;
+                })
+                .orElse(null);
     }
 
     @Override

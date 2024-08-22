@@ -1,8 +1,9 @@
 package com.wangguangwu.usermodule.controller;
 
 import com.alibaba.fastjson2.JSON;
-import com.wangguangwu.usermodule.entity.UserInfoDO;
+import com.wangguangwu.beanmodule.bean.User;
 import com.wangguangwu.usermodule.service.UserService;
+import com.wangguangwu.utilsmodule.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,9 +24,9 @@ public class UserController {
     private UserService userService;
 
     @GetMapping(value = "/get/{uid}")
-    public UserInfoDO getUser(@PathVariable("uid") Long uid) {
-        UserInfoDO user = userService.getUserById(uid);
+    public Response<User> getUser(@PathVariable("uid") Long uid) {
+        User user = userService.getUserById(uid);
         log.info("获取到的用户信息为：{}", JSON.toJSONString(user));
-        return user;
+        return Response.success(user);
     }
 }

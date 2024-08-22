@@ -5,21 +5,17 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.wangguangwu.beanmodule.bean.*;
 import com.wangguangwu.ordermodule.entity.OrderInfoDO;
 import com.wangguangwu.ordermodule.entity.OrderItemInfoDO;
+import com.wangguangwu.ordermodule.feign.ProductService;
+import com.wangguangwu.ordermodule.feign.UserService;
 import com.wangguangwu.ordermodule.mapper.OrderInfoMapper;
 import com.wangguangwu.ordermodule.mapper.OrderItemInfoMapper;
 import com.wangguangwu.ordermodule.service.OrderService;
-import com.wangguangwu.utilsmodule.builder.ProductUrlBuilder;
-import com.wangguangwu.utilsmodule.builder.UserUrlBuilder;
 import com.wangguangwu.utilsmodule.exception.ServiceException;
 import com.wangguangwu.utilsmodule.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -38,7 +34,9 @@ public class OrderServiceImpl implements OrderService {
     @Resource
     private OrderItemInfoMapper orderItemInfoMapper;
     @Resource
-    private RestTemplate restTemplate;
+    private ProductService productService;
+    @Resource
+    private UserService userService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -53,20 +51,8 @@ public class OrderServiceImpl implements OrderService {
         Long oId = orderInfo.getId();
         // 保存订单项逆袭
         insertOrderItemInfo(orderParams, oId, product);
-
-        String updateProductUrl = ProductUrlBuilder.updateCount(orderParams.getProductId(), orderParams.getCount());
-        ResponseEntity<Response<Integer>> responseEntity = restTemplate.exchange(
-                updateProductUrl,
-                HttpMethod.POST,
-                null,
-                new ParameterizedTypeReference<Response<Integer>>() {
-                }
-        );
-
-        Response<Integer> result = responseEntity.getBody();
-        if (result == null || !result.isSuccess()) {
-            throw new ServiceException("库存扣减失败");
-        }
+        // 更新库存
+        updateProductCount(orderParams);
         return oId;
     }
 
@@ -127,11 +113,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private Product getProduct(OrderParams orderParams) {
-        String queryProductUrl = ProductUrlBuilder.query(orderParams.getProductId());
-        Product product = restTemplate.getForObject(queryProductUrl, Product.class);
-        if (product == null) {
+        Response<Product> response = productService.getProduct(orderParams.getProductId());
+        if (response == null || response.isFail() || response.getData() == null) {
             throw new ServiceException("未获取到商品信息: " + JSONObject.toJSONString(orderParams));
         }
+        Product product = response.getData();
         if (product.getProStock() < orderParams.getCount()) {
             throw new ServiceException("商品库存不足: " + JSONObject.toJSONString(orderParams));
         }
@@ -139,11 +125,17 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private User getUser(OrderParams orderParams) {
-        String queryUserUrl = UserUrlBuilder.query(orderParams.getUserId());
-        User user = restTemplate.getForObject(queryUserUrl, User.class);
-        if (user == null) {
-            throw new ServiceException("未获取到用户信息: " + JSONObject.toJSONString(orderParams));
+        Response<User> response = userService.getUser(orderParams.getUserId());
+        if (response == null || response.isFail() || response.getData() == null) {
+            throw new ServiceException("未获取到用户信息: " + JSONObject.toJSONString(response));
         }
-        return user;
+        return response.getData();
+    }
+
+    private void updateProductCount(OrderParams orderParams) {
+        Response<Integer> response = productService.updateCount(orderParams.getProductId(), orderParams.getCount());
+        if (response == null || response.isFail() || response.getData() == null) {
+            throw new ServiceException("库存扣减失败");
+        }
     }
 }

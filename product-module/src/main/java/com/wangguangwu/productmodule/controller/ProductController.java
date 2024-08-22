@@ -1,7 +1,7 @@
 package com.wangguangwu.productmodule.controller;
 
 import com.alibaba.fastjson2.JSONObject;
-import com.wangguangwu.productmodule.entity.ProductInfoDO;
+import com.wangguangwu.beanmodule.bean.Product;
 import com.wangguangwu.productmodule.service.ProductService;
 import com.wangguangwu.utilsmodule.response.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +21,10 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping(value = "/get/{pid}")
-    public ProductInfoDO getProduct(@PathVariable("pid") Long pid) {
-        ProductInfoDO product = productService.getProductById(pid);
+    public Response<Product> getProduct(@PathVariable("pid") Long pid) {
+        Product product = productService.getProductById(pid);
         log.info("获取到的商品信息为：{}", JSONObject.toJSONString(product));
-        return product;
+        return Response.success(product);
     }
 
     @PostMapping(value = "/updateCount/{pid}/{count}")

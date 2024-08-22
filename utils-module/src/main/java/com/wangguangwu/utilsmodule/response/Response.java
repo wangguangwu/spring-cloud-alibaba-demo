@@ -55,6 +55,17 @@ public class Response<T> {
     }
 
     /**
+     * 构造错误的响应
+     *
+     * @param message 错误信息
+     * @param <T>     响应数据的类型
+     * @return 包含错误状态码和消息的响应对象
+     */
+    public static <T> Response<T> error(String message) {
+        return new Response<>(ResponseEnum.FAIL.getCode(), message, null);
+    }
+
+    /**
      * 构造错误的响应，附带响应数据
      *
      * @param resultCodeEnum 错误码枚举
@@ -67,11 +78,11 @@ public class Response<T> {
     }
 
     /**
-     * 判断是否成功
+     * 判断是否失败
      *
      * @return boolean
      */
-    public boolean isSuccess() {
-        return ResponseEnum.SUCCESS.getCode() == this.getCode();
+    public boolean isFail() {
+        return ResponseEnum.SUCCESS.getCode() != this.getCode();
     }
 }
