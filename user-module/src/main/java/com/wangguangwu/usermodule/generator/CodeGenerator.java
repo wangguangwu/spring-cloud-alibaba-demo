@@ -105,7 +105,9 @@ public class CodeGenerator {
                 // 使用 Freemarker 引擎模板，默认的是 Velocity 引擎模板
                 .templateEngine(new FreemarkerTemplateEngine())
                 // 禁止生成此文件
-                .templateConfig(builder -> builder.controller(""))
+                .templateConfig(builder -> builder.controller("")
+                        .service("")
+                        .serviceImpl(""))
                 .execute();
     }
 }

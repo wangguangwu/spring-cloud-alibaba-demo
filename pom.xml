@@ -11,9 +11,11 @@
     <description>spring-cloud-alibaba-demo</description>
 
     <modules>
-        <module>user-module</module>
         <module>bean-module</module>
         <module>utils-module</module>
+        <module>user-module</module>
+        <module>product-module</module>
+        <module>order-module</module>
     </modules>
 
     <properties>

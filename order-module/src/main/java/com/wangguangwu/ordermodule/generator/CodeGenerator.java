@@ -1,4 +1,4 @@
-package com.wangguangwu.productmodule.generator;
+package com.wangguangwu.ordermodule.generator;
 
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.config.OutputFile;
@@ -23,12 +23,12 @@ public class CodeGenerator {
     /**
      * 项目名称
      */
-    private static final String PROJECT_NAME = "product-module";
+    private static final String PROJECT_NAME = "order-module";
 
     /**
      * 包名
      */
-    private static final String PACKAGE_NAME = "com.wangguangwu.productmodule";
+    private static final String PACKAGE_NAME = "com.wangguangwu.ordermodule";
 
     /**
      * 文件所在目录
@@ -38,7 +38,7 @@ public class CodeGenerator {
     /**
      * 数据库配置
      */
-    private static final String URL_PATH = "jdbc:mysql://127.0.0.1:3306/productdb?useUnicode=true&characterEncoding=utf8&autoReconnect=true&allowMultiQueries=true&useSSL=false";
+    private static final String URL_PATH = "jdbc:mysql://127.0.0.1:3306/orderdb?useUnicode=true&characterEncoding=utf8&autoReconnect=true&allowMultiQueries=true&useSSL=false";
     private static final String USER_NAME = "root";
     private static final String PASSWORD = "123456";
 
@@ -48,7 +48,7 @@ public class CodeGenerator {
 
     private static void create() {
         // 创建的表名
-        String tableName = "t_product_info";
+        String tableName = "t_order_info,t_order_item_info";
 
         // 生成文件
         FastAutoGenerator.create(URL_PATH, USER_NAME, PASSWORD)
