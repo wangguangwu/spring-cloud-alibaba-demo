@@ -5,11 +5,7 @@ import com.wangguangwu.productmodule.entity.ProductInfoDO;
 import com.wangguangwu.productmodule.service.ProductService;
 import com.wangguangwu.utilsmodule.response.Response;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -31,7 +27,7 @@ public class ProductController {
         return product;
     }
 
-    @GetMapping(value = "/update_count/{pid}/{count}")
+    @PostMapping(value = "/updateCount/{pid}/{count}")
     public Response<Integer> updateCount(@PathVariable("pid") Long pid, @PathVariable("count") Integer count) {
         log.info("更新商品库存传递的参数为: 商品id:{}, 购买数量:{} ", pid, count);
         int updateCount = productService.updateProductStockById(count, pid);

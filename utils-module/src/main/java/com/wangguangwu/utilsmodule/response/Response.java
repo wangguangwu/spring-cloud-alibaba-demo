@@ -65,4 +65,13 @@ public class Response<T> {
     public static <T> Response<T> error(ResponseEnum resultCodeEnum, T data) {
         return new Response<>(resultCodeEnum.getCode(), resultCodeEnum.getMessage(), data);
     }
+
+    /**
+     * 判断是否成功
+     *
+     * @return boolean
+     */
+    public boolean isSuccess() {
+        return ResponseEnum.SUCCESS.getCode() == this.getCode();
+    }
 }

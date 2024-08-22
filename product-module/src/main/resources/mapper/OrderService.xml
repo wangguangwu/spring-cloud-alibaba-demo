@@ -3,7 +3,7 @@
 <mapper namespace="com.wangguangwu.productmodule.mapper.ProductInfoMapper">
 
     <update id="updateProductStockById">
-        update t_product_info set t_pro_stock = t_pro_stock - #{count} where id = #{id}
+        update t_product_info set pro_stock = pro_stock - #{count} where id = #{id}
     </update>
 
 </mapper>

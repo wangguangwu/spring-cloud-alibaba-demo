@@ -8,11 +8,15 @@ import com.wangguangwu.ordermodule.entity.OrderItemInfoDO;
 import com.wangguangwu.ordermodule.mapper.OrderInfoMapper;
 import com.wangguangwu.ordermodule.mapper.OrderItemInfoMapper;
 import com.wangguangwu.ordermodule.service.OrderService;
-import com.wangguangwu.utilsmodule.constant.HttpProtocolConstants;
-import com.wangguangwu.utilsmodule.constant.ServiceConstants;
+import com.wangguangwu.utilsmodule.builder.ProductUrlBuilder;
+import com.wangguangwu.utilsmodule.builder.UserUrlBuilder;
 import com.wangguangwu.utilsmodule.exception.ServiceException;
+import com.wangguangwu.utilsmodule.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -39,41 +43,30 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long saveOrder(OrderParams orderParams) {
-        String userUrl = HttpProtocolConstants.HTTP_PROTOCOL + ServiceConstants.USER_SERVER
-                + "/user/get/" + orderParams.getUserId();
-        User user = restTemplate.getForObject(userUrl, User.class);
-        if (user == null) {
-            throw new ServiceException("未获取到用户信息: " + JSONObject.toJSONString(orderParams));
-        }
-
-        String productUrl = HttpProtocolConstants.HTTP_PROTOCOL + ServiceConstants.PRODUCT_SERVER +
-                "/product/get/" + orderParams.getProductId();
-        Product product = restTemplate.getForObject(productUrl, Product.class);
-        if (product == null) {
-            throw new ServiceException("未获取到商品信息: " + JSONObject.toJSONString(orderParams));
-        }
-        if (product.getProStock() < orderParams.getCount()) {
-            throw new ServiceException("商品库存不足: " + JSONObject.toJSONString(orderParams));
-        }
-
-        OrderInfoDO orderInfo = new OrderInfoDO();
-        orderInfo.setAddress(user.getAddress());
-        orderInfo.setPhone(user.getPhone());
-        orderInfo.setUserId(user.getId());
-        orderInfo.setUserName(user.getUsername());
-        orderInfo.setTotalPrice(product.getProPrice().multiply(BigDecimal.valueOf(orderParams.getCount())));
-        orderInfoMapper.insert(orderInfo);
-
+        // 获取用户信息
+        User user = getUser(orderParams);
+        // 获取商品信息
+        Product product = getProduct(orderParams);
+        // 保存订单信息
+        OrderInfoDO orderInfo = getOrderInfoDO(orderParams, user, product);
         // 获取订单id
         Long oId = orderInfo.getId();
+        // 保存订单项逆袭
+        insertOrderItemInfo(orderParams, oId, product);
 
-        OrderItemInfoDO orderItemInfo = new OrderItemInfoDO();
-        orderItemInfo.setNumber(orderParams.getCount());
-        orderItemInfo.setOrderId(oId);
-        orderItemInfo.setProId(product.getId());
-        orderItemInfo.setProName(product.getProName());
-        orderItemInfo.setProPrice(product.getProPrice());
-        orderItemInfoMapper.insert(orderItemInfo);
+        String updateProductUrl = ProductUrlBuilder.updateCount(orderParams.getProductId(), orderParams.getCount());
+        ResponseEntity<Response<Integer>> responseEntity = restTemplate.exchange(
+                updateProductUrl,
+                HttpMethod.POST,
+                null,
+                new ParameterizedTypeReference<Response<Integer>>() {
+                }
+        );
+
+        Response<Integer> result = responseEntity.getBody();
+        if (result == null || !result.isSuccess()) {
+            throw new ServiceException("库存扣减失败");
+        }
         return oId;
     }
 
@@ -110,5 +103,47 @@ public class OrderServiceImpl implements OrderService {
                     BeanUtils.copyProperties(orderItemInfoDO, orderItemInfo);
                     return orderItemInfo;
                 }).collect(Collectors.toList());
+    }
+
+    private void insertOrderItemInfo(OrderParams orderParams, Long oId, Product product) {
+        OrderItemInfoDO orderItemInfo = new OrderItemInfoDO();
+        orderItemInfo.setNumber(orderParams.getCount());
+        orderItemInfo.setOrderId(oId);
+        orderItemInfo.setProId(product.getId());
+        orderItemInfo.setProName(product.getProName());
+        orderItemInfo.setProPrice(product.getProPrice());
+        orderItemInfoMapper.insert(orderItemInfo);
+    }
+
+    private OrderInfoDO getOrderInfoDO(OrderParams orderParams, User user, Product product) {
+        OrderInfoDO orderInfo = new OrderInfoDO();
+        orderInfo.setAddress(user.getAddress());
+        orderInfo.setPhone(user.getPhone());
+        orderInfo.setUserId(user.getId());
+        orderInfo.setUserName(user.getUsername());
+        orderInfo.setTotalPrice(product.getProPrice().multiply(BigDecimal.valueOf(orderParams.getCount())));
+        orderInfoMapper.insert(orderInfo);
+        return orderInfo;
+    }
+
+    private Product getProduct(OrderParams orderParams) {
+        String queryProductUrl = ProductUrlBuilder.query(orderParams.getProductId());
+        Product product = restTemplate.getForObject(queryProductUrl, Product.class);
+        if (product == null) {
+            throw new ServiceException("未获取到商品信息: " + JSONObject.toJSONString(orderParams));
+        }
+        if (product.getProStock() < orderParams.getCount()) {
+            throw new ServiceException("商品库存不足: " + JSONObject.toJSONString(orderParams));
+        }
+        return product;
+    }
+
+    private User getUser(OrderParams orderParams) {
+        String queryUserUrl = UserUrlBuilder.query(orderParams.getUserId());
+        User user = restTemplate.getForObject(queryUserUrl, User.class);
+        if (user == null) {
+            throw new ServiceException("未获取到用户信息: " + JSONObject.toJSONString(orderParams));
+        }
+        return user;
     }
 }
