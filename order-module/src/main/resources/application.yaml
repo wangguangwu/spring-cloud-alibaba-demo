@@ -1,9 +1,9 @@
 server:
-  port: 8092
+  port: 9000
 
 spring:
   application:
-    name: order-module
+    name: server-order
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver

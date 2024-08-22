@@ -3,12 +3,12 @@ package com.wangguangwu.beanmodule.bean;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
  * <p>
- * 用户表
+ * 商品表
  * </p>
  *
  * @author wangguangwu
@@ -16,9 +16,7 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Setter
-public class User implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class Product {
 
     /**
      * 主键
@@ -26,28 +24,24 @@ public class User implements Serializable {
     private Long id;
 
     /**
-     * 用户名
+     * 商品名称
      */
-    private String username;
+    private String proName;
 
     /**
-     * 密码
+     * 商品价格
      */
-    private String password;
+    private BigDecimal proPrice;
 
     /**
-     * 手机号
+     * 商品库存
      */
-    private String phone;
-
-    /**
-     * 地址
-     */
-    private String address;
+    private Integer proStock;
 
     /**
      * 删除标志位。0：未删除；1：已删除
      */
+
     private Boolean isDeleted;
 
     /**
@@ -59,4 +53,5 @@ public class User implements Serializable {
      * 更新时间
      */
     private LocalDateTime gmtUpdated;
+
 }

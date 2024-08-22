@@ -3,6 +3,7 @@ package com.wangguangwu.productmodule.controller;
 import com.alibaba.fastjson2.JSONObject;
 import com.wangguangwu.productmodule.entity.ProductInfoDO;
 import com.wangguangwu.productmodule.service.ProductService;
+import com.wangguangwu.utilsmodule.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,4 +31,10 @@ public class ProductController {
         return product;
     }
 
+    @GetMapping(value = "/update_count/{pid}/{count}")
+    public Response<Integer> updateCount(@PathVariable("pid") Long pid, @PathVariable("count") Integer count) {
+        log.info("更新商品库存传递的参数为: 商品id:{}, 购买数量:{} ", pid, count);
+        int updateCount = productService.updateProductStockById(count, pid);
+        return Response.success(updateCount);
+    }
 }

@@ -1,9 +1,9 @@
 server:
-  port: 8091
+  port: 9010
 
 spring:
   application:
-    name: user-module
+    name: server-product
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver

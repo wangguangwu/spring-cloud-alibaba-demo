@@ -9,8 +9,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * @author wangguangwu
  */
 @SpringBootApplication
-@MapperScan("com.wangguangwu.usermodule.mapper")
 @EnableTransactionManagement
+@MapperScan("com.wangguangwu.usermodule.mapper")
 public class UserModuleApplication {
 
 	public static void main(String[] args) {
