@@ -8,6 +8,8 @@ import com.wangguangwu.ordermodule.entity.OrderItemInfoDO;
 import com.wangguangwu.ordermodule.mapper.OrderInfoMapper;
 import com.wangguangwu.ordermodule.mapper.OrderItemInfoMapper;
 import com.wangguangwu.ordermodule.service.OrderService;
+import com.wangguangwu.utilsmodule.constant.HttpProtocolConstants;
+import com.wangguangwu.utilsmodule.constant.ServiceConstants;
 import com.wangguangwu.utilsmodule.exception.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -37,13 +39,15 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long saveOrder(OrderParams orderParams) {
-        String userUrl = "http://localhost:9020/user/get/" + orderParams.getUserId();
+        String userUrl = HttpProtocolConstants.HTTP_PROTOCOL + ServiceConstants.USER_SERVER
+                + "/user/get/" + orderParams.getUserId();
         User user = restTemplate.getForObject(userUrl, User.class);
         if (user == null) {
             throw new ServiceException("未获取到用户信息: " + JSONObject.toJSONString(orderParams));
         }
 
-        String productUrl = "http://localhost:9010/product/get/" + orderParams.getProductId();
+        String productUrl = HttpProtocolConstants.HTTP_PROTOCOL + ServiceConstants.PRODUCT_SERVER +
+                "/product/get/" + orderParams.getProductId();
         Product product = restTemplate.getForObject(productUrl, Product.class);
         if (product == null) {
             throw new ServiceException("未获取到商品信息: " + JSONObject.toJSONString(orderParams));
