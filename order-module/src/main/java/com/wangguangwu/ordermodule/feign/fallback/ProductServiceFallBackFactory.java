@@ -24,7 +24,7 @@ public class ProductServiceFallBackFactory implements FallbackFactory<ProductSer
 
             @Override
             public Response<Integer> updateCount(Long pid, Integer count) {
-                return Response.error("查询失败，触发容错机制");
+                return Response.error("操作失败，触发容错机制");
             }
         };
     }

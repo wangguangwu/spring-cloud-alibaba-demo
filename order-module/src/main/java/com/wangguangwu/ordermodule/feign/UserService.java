@@ -1,6 +1,7 @@
 package com.wangguangwu.ordermodule.feign;
 
 import com.wangguangwu.beanmodule.bean.User;
+import com.wangguangwu.ordermodule.feign.fallback.UserServiceFallBackFactory;
 import com.wangguangwu.utilsmodule.constant.ServiceConstants;
 import com.wangguangwu.utilsmodule.response.Response;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 /**
  * @author wangguangwu
  */
-@FeignClient(ServiceConstants.USER_SERVER)
+@FeignClient(value = ServiceConstants.USER_SERVER, fallbackFactory = UserServiceFallBackFactory.class)
 public interface UserService {
 
     /**

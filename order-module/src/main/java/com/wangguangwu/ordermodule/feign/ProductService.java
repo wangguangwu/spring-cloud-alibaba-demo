@@ -1,6 +1,7 @@
 package com.wangguangwu.ordermodule.feign;
 
 import com.wangguangwu.beanmodule.bean.Product;
+import com.wangguangwu.ordermodule.feign.fallback.ProductServiceFallBackFactory;
 import com.wangguangwu.utilsmodule.constant.ServiceConstants;
 import com.wangguangwu.utilsmodule.response.Response;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 /**
  * @author wangguangwu
  */
-@FeignClient(value = ServiceConstants.PRODUCT_SERVER)
+@FeignClient(value = ServiceConstants.PRODUCT_SERVER, fallbackFactory = ProductServiceFallBackFactory.class)
 public interface ProductService {
 
     /**

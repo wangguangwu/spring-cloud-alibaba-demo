@@ -5,11 +5,10 @@ import com.wangguangwu.beanmodule.bean.OrderDetails;
 import com.wangguangwu.beanmodule.bean.OrderParams;
 import com.wangguangwu.ordermodule.service.OrderService;
 import com.wangguangwu.utilsmodule.response.Response;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
 
 /**
  * @author wangguangwu

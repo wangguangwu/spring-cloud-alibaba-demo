@@ -1,0 +1,62 @@
+version: '3'
+
+networks:
+  cloud-alibaba-net:
+    driver: bridge
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+    ports:
+      - "3306:3306"
+    networks:
+      - cloud-alibaba-net
+    volumes:
+      - ./mysql/data:/var/lib/mysql  # 数据持久化存储
+      - ./sql:/docker-entrypoint-initdb.d  # MySQL初始化SQL脚本
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: always
+
+  nacos:
+    image: nacos/nacos-server:v2.4.3
+    container_name: nacos-standalone
+    environment:
+      - MODE=standalone  # 独立模式
+      - SPRING_DATASOURCE_PLATFORM=mysql  # 使用 MySQL 作为数据源
+      - MYSQL_SERVICE_HOST=mysql  # MySQL 主机名
+      - MYSQL_SERVICE_PORT=3306  # MySQL 端口
+      - MYSQL_SERVICE_DB_NAME=nacosdb  # 数据库名称
+      - MYSQL_SERVICE_USER=root  # 数据库用户名
+      - MYSQL_SERVICE_PASSWORD=123456  # 数据库密码
+      - NACOS_AUTH_ENABLE=true  # 启用鉴权
+      - NACOS_AUTH_TOKEN=SecretKey012345678901234567890123456789012345678901234567890123456789
+      - NACOS_CORE_AUTH_SERVER_IDENTITY_KEY=nacosIdentityKey  # 服务身份验证密钥
+      - NACOS_CORE_AUTH_SERVER_IDENTITY_VALUE=nacosIdentityValue123  # 服务身份验证值
+    ports:
+      - "8848:8848"  # Nacos 端口
+    networks:
+      - cloud-alibaba-net
+    depends_on:
+      mysql:
+        condition: service_healthy  # 等待 MySQL 服务健康后再启动 Nacos
+    restart: always
+#
+#  sentinel:
+#    image: bladex/sentinel-dashboard:1.8.8
+#    container_name: sentinel
+#    ports:
+#      - "8858:8858"
+#    environment:
+#      JAVA_OPTS: "-Dserver.port=8858 -Dcsp.sentinel.dashboard.server=localhost:8858 -Dproject.name=sentinel-dashboard -Dsentinel.dashboard.auth.username=sentinel -Dsentinel.dashboard.auth.password=sentinel"
+#    depends_on:
+#      - nacos
+#    networks:
+#      - cloud-alibaba-net
+#    restart: always
