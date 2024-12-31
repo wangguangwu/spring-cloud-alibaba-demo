@@ -1,0 +1,50 @@
+server:
+  port: 9000
+  # request limit
+  tomcat:
+    max-connections: 20
+
+spring:
+  application:
+    name: order-server
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/masterdb?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=convertToNull&autoReconnect=true
+    username: root
+    password: 123456
+  cloud:
+    # nacos
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        namespace: public
+        group: ORDER_GROUP
+      username: nacos
+      password: nacos
+#    # sentinel
+#    sentinel:
+#      transport:
+#        # connect to sentinel
+#        port: 9999
+#        dashboard: 127.0.0.1:8888
+
+mybatis-plus:
+  # entity location
+  type-aliases-package: com.wangguangwu.ordermodule.entity
+  configuration:
+    # log
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # camelCase conversion on
+    map-underscore-to-camel-case: true
+  # mapper.xml location
+  mapper-locations: classpath*:mapper/*.xml
+  global-config:
+    # logic delete
+    db-config:
+      logic-delete-field: is_deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+feign:
+  sentinel:
+    enabled: true

@@ -1,9 +1,9 @@
 package com.wangguangwu.beanmodule.bean;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 
 /**
  * @author wangguangwu
